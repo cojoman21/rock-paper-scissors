@@ -16,7 +16,6 @@ buttons.forEach((button) => {
 const pChoices = document.querySelector("#choices");
 const pScore = document.querySelector("#score");
 
-pChoices.innerText = "Waiting for round to start...";
 pScore.innerText = displayScore(playerScore, computerScore);
 
 function getRandomInt(max) {
@@ -44,10 +43,6 @@ function playRound(player) {
     let computerChoice = convertToString(getRandomInt(3));
     player = player.toLowerCase();
 
-    // DEBUG
-    // console.log(`[DEBUG][COMPARE FUNC]: Player choice: ${player}`);
-    // console.log(`[DEBUG][COMPARE FUNC] : Computer choice: ${computerChoice}`);
-
     pChoices.innerText = `The player has picked ${player}.\nThe computer has picked ${computerChoice}.`;
 
     if (player === computerChoice) return "draw";
@@ -59,42 +54,33 @@ function playRound(player) {
     if (player === "scissors" && computerChoice === "paper") return "player";
 }
 
+function clearState() {
+    pChoices.innerText = "Waiting for round to start...";
+    playerScore = 0;
+    computerScore = 0;
+    pScore.innerText = displayScore(playerScore, computerScore);
+}
+
 function startGame(button) {
-    // DEBUG
-    // console.log(`[DEBUG][ROUND START]: Player score: ${playerScore}`);
-    // console.log(`[DEBUG][ROUND START]: Computer score: ${computerScore}`);
-
-    // Check if there is a game in progress
-    // If not, initialize a new game
-    if (playerScore >= 5 || computerScore >= 5) {
-        playerScore = 0;
-        computerScore = 0;
-        pScore.innerText = displayScore(playerScore, computerScore);
-    }
-
     const winner = playRound(button);
-
-    // DEBUG
-    // console.log(`[DEBUG][INSIDE startGame()] Winner = ${winner}`);
 
     if (winner === "draw") {
         pScore.innerText = displayScore(playerScore, computerScore);
-        roundCounter++;
     } else if (winner === "player") {
         playerScore++;
         pScore.innerText = displayScore(playerScore, computerScore);
         if (playerScore >= 5) {
             window.alert(`You won! Pick Rock, Paper or Scissors to start a new game.`);
+            clearState();
             return;
         }
-        roundCounter++;
     } else {
         computerScore++;
         pScore.innerText = displayScore(playerScore, computerScore);
         if (computerScore >= 5) {
             window.alert(`The computer won! Pick Rock, Paper or Scissors to start a new game.`);
+            clearState();
             return;
         }
-        roundCounter++;
     }
 }
