@@ -1,3 +1,26 @@
+let roundCounter = 1;
+let playerScore = 0;
+let computerScore = 0;
+
+const btnRock = document.querySelector("#rock");
+const btnPaper = document.querySelector("#paper");
+const btnScissors = document.querySelector("#scissors");
+
+const buttons = document.querySelectorAll("button");
+
+buttons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+        startGame(event.target.innerText);
+    });
+});
+
+const pGameState = document.querySelector("#gameState");
+const pChoices = document.querySelector("#choices");
+const pScore = document.querySelector("#score");
+
+pChoices.innerText = "PLACEHOLDER";
+pScore.innerText = displayScore(playerScore, computerScore);
+
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
@@ -15,123 +38,71 @@ function convertToString(computerValue) {
     }
 }
 
-function getPlayerChoice() {
-    let choice = "";
-    let valid = false;
-    while (!valid) {
-        choice = prompt("Enter rock, paper or scissors:");
-        choice = choice.toLowerCase();
-        if (choice === "rock" || choice === "paper" || choice === "scissors") {
-            console.log(`The player picked ${choice}`);
-            valid = true;
-        } else {
-            console.log("Whoops. Invalid choice! Please enter again.");
-            continue;
-        }
-    }
-    return choice;
-}
-
-function compare(player, computer) {
-    //returns 1 if player won, 2 if computer won, 0 if draw
-    if (player === computer) {
-        return 0;
-    }
-    if (player === "rock") {
-        if (computer === "scissors") {
-            return 1;
-        } else {
-            return 2;
-        }
-    } else if (player === "paper") {
-        if (computer === "scissors") {
-            return 2;
-        } else {
-            return 1;
-        }
-    }
-    //if player === scissors
-    else {
-        if (computer === "paper") {
-            return 1;
-        } else {
-            return 2;
-        }
-    }
-}
-
 function displayScore(playerScore, computerScore) {
-    console.log(console.log(`The player has ${playerScore} points and the computer has ${computerScore} points.`));
+    return `Player score: ${playerScore} \n Computer score: ${computerScore}`;
 }
 
-function playRound(round) {
-    console.log(`This is round ${round}.`);
+function playRound(player) {
     let computerChoice = convertToString(getRandomInt(3));
-    let playerChoice = getPlayerChoice();
-    switch (compare(playerChoice, computerChoice)) {
-        case 0:
-            console.log(`The computer picked ${computerChoice}`);
-            return "draw";
-        case 1: {
-            console.log(`The computer picked ${computerChoice}`);
+    player = player.toLowerCase();
 
-            return "player";
-        }
-        case 2: {
-            console.log(`The computer picked ${computerChoice}`);
+    // DEBUG
+    // console.log(`[DEBUG][COMPARE FUNC]: Player choice: ${player}`);
+    // console.log(`[DEBUG][COMPARE FUNC] : Computer choice: ${computerChoice}`);
 
-            return "computer";
-        }
-    }
+    pChoices.innerText = `The player has picked ${player}.\nThe computer has picked ${computerChoice}.`;
+
+    if (player === computerChoice) return "draw";
+    if (player === "rock" && computerChoice === "paper") return "computer";
+    if (player === "rock" && computerChoice === "scissors") return "player";
+    if (player === "paper" && computerChoice === "rock") return "player";
+    if (player === "paper" && computerChoice === "scissors") return "computer";
+    if (player === "scissors" && computerChoice === "rock") return "computer";
+    if (player === "scissors" && computerChoice === "paper") return "player";
 }
 
-function playAgain() {
-    choice = prompt("Want to play again? Enter yes/y or no/n: ");
-    if (choice.toLowerCase() == "yes" || choice.toLowerCase() == "y") {
-        return true;
-    }
-    return false;
-}
+function startGame(button) {
+    // DEBUG
+    // console.log(`[DEBUG][ROUND START]: Player score: ${playerScore}`);
+    // console.log(`[DEBUG][ROUND START]: Computer score: ${computerScore}`);
 
-function playGame() {
-    let playAnother = true;
-    while (playAnother) {
-        console.log("The game has started!");
-        let playerScore = 0;
-        let computerScore = 0;
-        let round = 1;
-        while (round < 6) {
-            winner = playRound(round);
-            if (winner === "draw") {
-                displayScore(playerScore, computerScore);
-                console.log("This was a draw!");
-                round++;
-                continue;
-            } else if (winner === "player") {
-                playerScore++;
-                round++;
-                console.log("Player won this round!");
-                displayScore(playerScore, computerScore);
-                continue;
-            } else {
-                computerScore++;
-                round++;
-                console.log("Computer won this round!");
-                displayScore(playerScore, computerScore);
-                continue;
-            }
-        }
-        if (playerScore > computerScore) {
-            console.log("The player has won the game!");
-            console.log("End of game.\n\n");
-        } else if (playerScore === computerScore) {
-            console.log("Nobody won.");
-            console.log("End of game.\n\n");
-        } else {
-            console.log("The computer has won the game!");
-            console.log("End of game.\n\n");
-        }
-        playAnother = playAgain();
+    // Check if there is a game in progress
+    // If not, initialize a new game
+    if (playerScore >= 5 || computerScore >= 5) {
+        playerScore = 0;
+        computerScore = 0;
+        roundCounter = 1;
+        pScore.innerText = displayScore(playerScore, computerScore);
     }
-    console.log("Have a nice day.\n\n");
+
+    pGameState.innerText = `Round ${roundCounter}. Select Rock, Paper or Scissors:`;
+    const winner = playRound(button);
+
+    // DEBUG
+    // console.log(`[DEBUG][INSIDE startGame()] Winner = ${winner}`);
+
+    if (playerScore >= 5 || computerScore >= 5) {
+        gameStarted = false;
+    }
+
+    if (winner === "draw") {
+        pScore.innerText = displayScore(playerScore, computerScore);
+        roundCounter++;
+    } else if (winner === "player") {
+        playerScore++;
+        pScore.innerText = displayScore(playerScore, computerScore);
+        if (playerScore >= 5) {
+            pGameState.innerText = `The player won. Select Rock, Paper or Scissors to start a new game.`;
+            return;
+        }
+        roundCounter++;
+    } else {
+        computerScore++;
+        pScore.innerText = displayScore(playerScore, computerScore);
+        if (computerScore >= 5) {
+            pGameState.innerText = `The computer won. Select Rock, Paper or Scissors to start a new game.`;
+            return;
+        }
+        roundCounter++;
+    }
 }
