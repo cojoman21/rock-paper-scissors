@@ -1,4 +1,3 @@
-let roundCounter = 1;
 let playerScore = 0;
 let computerScore = 0;
 
@@ -14,11 +13,10 @@ buttons.forEach((button) => {
     });
 });
 
-const pGameState = document.querySelector("#gameState");
 const pChoices = document.querySelector("#choices");
 const pScore = document.querySelector("#score");
 
-pChoices.innerText = "PLACEHOLDER";
+pChoices.innerText = "Waiting for round to start...";
 pScore.innerText = displayScore(playerScore, computerScore);
 
 function getRandomInt(max) {
@@ -71,19 +69,13 @@ function startGame(button) {
     if (playerScore >= 5 || computerScore >= 5) {
         playerScore = 0;
         computerScore = 0;
-        roundCounter = 1;
         pScore.innerText = displayScore(playerScore, computerScore);
     }
 
-    pGameState.innerText = `Round ${roundCounter}. Select Rock, Paper or Scissors:`;
     const winner = playRound(button);
 
     // DEBUG
     // console.log(`[DEBUG][INSIDE startGame()] Winner = ${winner}`);
-
-    if (playerScore >= 5 || computerScore >= 5) {
-        gameStarted = false;
-    }
 
     if (winner === "draw") {
         pScore.innerText = displayScore(playerScore, computerScore);
@@ -92,7 +84,7 @@ function startGame(button) {
         playerScore++;
         pScore.innerText = displayScore(playerScore, computerScore);
         if (playerScore >= 5) {
-            pGameState.innerText = `The player won. Select Rock, Paper or Scissors to start a new game.`;
+            window.alert(`You won! Pick Rock, Paper or Scissors to start a new game.`);
             return;
         }
         roundCounter++;
@@ -100,7 +92,7 @@ function startGame(button) {
         computerScore++;
         pScore.innerText = displayScore(playerScore, computerScore);
         if (computerScore >= 5) {
-            pGameState.innerText = `The computer won. Select Rock, Paper or Scissors to start a new game.`;
+            window.alert(`The computer won! Pick Rock, Paper or Scissors to start a new game.`);
             return;
         }
         roundCounter++;
